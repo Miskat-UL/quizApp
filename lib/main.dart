@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'questionBank.dart';
+
+AnotherQuestion questionBank = AnotherQuestion();
 
 void main() {
   runApp(
@@ -29,20 +33,41 @@ class QuizApp extends StatefulWidget {
 }
 
 class _QuizAppState extends State<QuizApp> {
-  List<Icon> scoreKeeper = [
-    Icon(
-      Icons.check,
-      color: Colors.green,
-    ),
-    Icon(
-      Icons.check,
-      color: Colors.green,
-    ),
-    Icon(
-      Icons.close,
-      color: Colors.red,
-    )
-  ];
+  List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool ans) {
+    bool correctAns = questionBank.getAnswer();
+
+    setState(() {
+      if (questionBank.isFinished() == true) {
+        Alert(
+          context: context,
+          title: 'Finished',
+          desc: 'you have reached end of the quiz',
+        ).show();
+
+        questionBank.reset();
+        scoreKeeper = [];
+      } else {
+        if (correctAns == ans) {
+          scoreKeeper.add(
+            Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          );
+        } else {
+          scoreKeeper.add(
+            Icon(
+              Icons.close,
+              color: Colors.red,
+            ),
+          );
+        }
+        questionBank.nextQuestion();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +81,7 @@ class _QuizAppState extends State<QuizApp> {
             padding: const EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the quistion will go...',
+                questionBank.getQuestion(),
                 style: TextStyle(
                   fontSize: 25.0,
                   color: Colors.white,
@@ -79,14 +104,7 @@ class _QuizAppState extends State<QuizApp> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  scoreKeeper.add(
-                    Icon(
-                      Icons.check,
-                      color: Colors.green,
-                    ),
-                  );
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -105,7 +123,7 @@ class _QuizAppState extends State<QuizApp> {
                 ),
               ),
               onPressed: () {
-                //function work
+                checkAnswer(false);
               },
             ),
           ),
@@ -119,3 +137,21 @@ class _QuizAppState extends State<QuizApp> {
     );
   }
 }
+
+// List<String> question = [
+//   'You can lead a cow to down stears not up stears',
+//   'Appreantly one fourth of human bones are in feet',
+//   'A slug\'s blood is green',
+//   'she is a great mom',
+//   'i think that will be better',
+//   'she loves us so much',
+// ];
+
+// List<bool> answer = [
+//   true,
+//   false,
+//   true,
+//   true,
+//   false,
+//   true,
+// ];
